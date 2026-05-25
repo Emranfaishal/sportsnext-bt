@@ -1,7 +1,7 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 dotenv.config();
 const uri = process.env.MONGODB_URL;
 
@@ -34,7 +34,12 @@ async function run() {
             const result = await sportsCollection.find().toArray();
             res.json(result);
         });
-        
+        // 3
+        app.get('/spots/:id', async (req, res) => {
+            const { id } = req.params;
+            const result = await sportsCollection.findOne({ _id: new ObjectId(id) });
+            res.json(result);
+        });
 
 
         await client.db("admin").command({ ping: 1 });
