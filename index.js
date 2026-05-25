@@ -23,12 +23,18 @@ async function run() {
         await client.connect();
         const db = client.db('sportsnests');
         const sportsCollection = db.collection('sports');
+        // 1
         app.post('/spots', async (req, res) => {
             const sportData = req.body;
             const result = await sportsCollection.insertOne(sportData);
             res.json(result);
         });
-
+        // 2
+        app.get('/spots', async (req, res) => {
+            const result = await sportsCollection.find().toArray();
+            res.json(result);
+        });
+        
 
 
         await client.db("admin").command({ ping: 1 });
