@@ -23,7 +23,7 @@ async function run() {
         await client.connect();
         const db = client.db('sportsnests');
         const sportsCollection = db.collection('sports');
-        const bookingCollection=db.collection('bookings');
+        const bookingCollection = db.collection('bookings');
         // 1
         app.post('/spots', async (req, res) => {
             const sportData = req.body;
@@ -54,6 +54,12 @@ async function run() {
         app.delete('/spots/:id', async (req, res) => {
             const { id } = req.params;
             const result = await sportsCollection.deleteOne({ _id: new ObjectId(id) });
+            res.json(result);
+        });
+        // 6
+        app.post('/bookings', async (req, res) => {
+            const bookingData = req.body;
+            const result = await bookingCollection.insertOne(bookingData);
             res.json(result);
         });
 
