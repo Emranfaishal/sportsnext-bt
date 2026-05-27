@@ -40,6 +40,21 @@ async function run() {
             const result = await sportsCollection.findOne({ _id: new ObjectId(id) });
             res.json(result);
         });
+        // 4
+        app.patch('/spots/:id', async (req, res) => {
+            const { id } = req.params;
+            const updatedData = req.body;
+            const result = await sportsCollection.updateOne(
+                { _id: new ObjectId(id) },
+                { $set: updatedData });
+            res.json(result);
+        });
+        // 5
+        app.delete('/spots/:id', async (req, res) => {
+            const { id } = req.params;
+            const result = await sportsCollection.deleteOne({ _id: new ObjectId(id) });
+            res.json(result);
+        });
 
 
         await client.db("admin").command({ ping: 1 });
