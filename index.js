@@ -23,6 +23,7 @@ async function run() {
         await client.connect();
         const db = client.db('sportsnests');
         const sportsCollection = db.collection('sports');
+        const bookingCollection=db.collection('bookings');
         // 1
         app.post('/spots', async (req, res) => {
             const sportData = req.body;
