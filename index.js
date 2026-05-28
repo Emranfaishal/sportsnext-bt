@@ -62,6 +62,12 @@ async function run() {
             const result = await bookingCollection.insertOne(bookingData);
             res.json(result);
         });
+        // 7
+        app.get('bookings/:userId', async (req, res) => {
+            const { userId } = req.params;
+            const result = await bookingCollection.find({ userId: userId });
+            res.json(result);
+        });
 
 
         await client.db("admin").command({ ping: 1 });
