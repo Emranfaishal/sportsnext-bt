@@ -2,6 +2,7 @@ const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const { createRemoteJWKSet, jwtVerify } = require('jose-cjs');
 dotenv.config();
 const uri = process.env.MONGODB_URL;
 
@@ -18,6 +19,31 @@ const client = new MongoClient(uri, {
         deprecationErrors: true,
     }
 });
+const JWKS = createRemoteJWKSet(
+    new URL('http://localhost:3000/api/auth/jwks')
+)
+
+const verifyToken = async (req, res, next) => {
+    const authHeader = req?.headers.authorization;
+    if (!authHeader) {
+        return res.status(401).json({ massage: 'Unauthorized' });
+    }
+    const token = authHeader.split(' ')[1];
+    if (!token) {
+        return res.status(401).json({ massage: 'Unauthorized' });
+    }
+    try {
+        const { payload } = await jwtVerify(token, JWKS);
+        console.log(payload);
+        next();
+    }
+    catch (error) {
+        return res.status(403).json({ massage: 'Forbidden' });
+    }
+
+
+
+}
 async function run() {
     try {
         await client.connect();
@@ -36,15 +62,7 @@ async function run() {
             res.json(result);
         });
         // 3
-        app.get('/spots/:id', (req, res, next) => {
-            const header = req.headers.authorization;
-            // console.log(header);
-            if (header === 'logged in') {
-                next();
-            } else {
-                return res.status(401), json({ message: 'UnauthorizJed' });
-            }
-        }, async (req, res) => {
+        app.get('/spots/:id', verifyToken, async (req, res) => {
             const { id } = req.params;
             const result = await sportsCollection.findOne({ _id: new ObjectId(id) });
             res.json(result);
@@ -65,7 +83,7 @@ async function run() {
             res.json(result);
         });
         // 6
-        app.post('/bookings', async (req, res) => {
+        app.post('/bookings', verifyToken, async (req, res) => {
             const bookingData = req.body;
             const result = await bookingCollection.insertOne(bookingData);
             res.json(result);
