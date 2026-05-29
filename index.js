@@ -63,12 +63,17 @@ async function run() {
             res.json(result);
         });
         // 7
-        app.get('bookings/:userId', async (req, res) => {
+        app.get('/bookings/:userId', async (req, res) => {
             const { userId } = req.params;
-            const result = await bookingCollection.find({ userId: userId });
+            const result = await bookingCollection.find({ userId: userId }).toArray();
             res.json(result);
         });
-
+        // 8
+        app.delete('/bookings/:bookingId', async (req, res) => {
+            const { bookingId } = req.params;
+            const result = await bookingCollection.deleteOne({ _id: new ObjectId(bookingId) });
+            res.json(result);
+        });
 
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
