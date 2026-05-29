@@ -36,7 +36,15 @@ async function run() {
             res.json(result);
         });
         // 3
-        app.get('/spots/:id', async (req, res) => {
+        app.get('/spots/:id', (req, res, next) => {
+            const header = req.headers.authorization;
+            // console.log(header);
+            if (header === 'logged in') {
+                next();
+            } else {
+                return res.status(401), json({ message: 'UnauthorizJed' });
+            }
+        }, async (req, res) => {
             const { id } = req.params;
             const result = await sportsCollection.findOne({ _id: new ObjectId(id) });
             res.json(result);
