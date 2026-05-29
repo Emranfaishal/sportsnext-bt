@@ -100,6 +100,11 @@ async function run() {
             const result = await bookingCollection.deleteOne({ _id: new ObjectId(bookingId) });
             res.json(result);
         });
+        // 9
+        app.get('/sportsPage', async (req, res) => {
+            const result = await sportsCollection.find().limit(6).toArray();
+            res.json(result);
+        });
 
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
