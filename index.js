@@ -102,7 +102,7 @@ async function run() {
         });
         // 9
         app.get('/sportsPage', async (req, res) => {
-            const result = await sportsCollection.find().limit(6).toArray();
+            const result = await sportsCollection.find().limit(3).toArray();
             res.json(result);
         });
 
