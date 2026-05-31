@@ -7,8 +7,8 @@ dotenv.config();
 const uri = process.env.MONGODB_URL;
 
 const app = express();
-// const PORT = process.env.PORT || 8000;
-const PORT = 8000;
+const PORT = process.env.PORT || 8000;
+// const PORT = 8000;
 app.use(cors());
 app.use(express.json());
 
@@ -20,7 +20,7 @@ const client = new MongoClient(uri, {
     }
 });
 const JWKS = createRemoteJWKSet(
-    new URL('http://localhost:3000/api/auth/jwks')
+    new URL(`${process.env.CLIENT_URL}/api/auth/jwks`)
 )
 
 const verifyToken = async (req, res, next) => {
@@ -46,7 +46,7 @@ const verifyToken = async (req, res, next) => {
 }
 async function run() {
     try {
-        await client.connect();
+        // await client.connect();
         const db = client.db('sportsnests');
         const sportsCollection = db.collection('sports');
         const bookingCollection = db.collection('bookings');
@@ -105,8 +105,13 @@ async function run() {
             const result = await sportsCollection.find().limit(3).toArray();
             res.json(result);
         });
+        // 10
+        app.get('/ManageMyFacilities', verifyToken,  async (req, res) => {
+            const result = await sportsCollection.find().toArray();
+            res.json(result);
+        })
 
-        await client.db("admin").command({ ping: 1 });
+        // await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {
         // await client.close();
